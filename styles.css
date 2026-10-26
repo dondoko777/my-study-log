@@ -1,16 +1,16 @@
 :root {
-  --paper: #fffdf7;
-  --ink: #2d2a26;
-  --muted: #76716b;
-  --line: #e5ddd0;
+  --paper: #f2f7f6;
+  --ink: #20343b;
+  --muted: #687a7e;
+  --line: #d7e4e2;
   --panel: #ffffff;
-  --pink: #f47fa2;
-  --pink-dark: #cd4772;
+  --accent: #43998f;
+  --accent-dark: #286d68;
   --mint: #79c7b3;
   --yellow: #ffd166;
   --sky: #6aa9ff;
   --lavender: #b28dff;
-  --shadow: 0 18px 50px rgba(63, 44, 29, 0.14);
+  --shadow: 0 18px 50px rgba(32, 68, 67, 0.1);
   font-family:
     "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", system-ui, sans-serif;
 }
@@ -24,8 +24,8 @@ body {
   margin: 0;
   color: var(--ink);
   background:
-    linear-gradient(135deg, rgba(244, 127, 162, 0.16), transparent 34%),
-    linear-gradient(315deg, rgba(121, 199, 179, 0.18), transparent 38%),
+    linear-gradient(135deg, rgba(67, 153, 143, 0.13), transparent 34%),
+    linear-gradient(315deg, rgba(106, 169, 255, 0.11), transparent 38%),
     var(--paper);
 }
 
@@ -52,7 +52,7 @@ button {
 .editor-panel,
 .history-panel {
   min-width: 0;
-  border: 1px solid rgba(229, 221, 208, 0.9);
+  border: 1px solid rgba(215, 228, 226, 0.9);
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.88);
   box-shadow: var(--shadow);
@@ -88,7 +88,7 @@ button {
 
 .eyebrow {
   margin: 0 0 6px;
-  color: var(--pink-dark);
+  color: var(--accent-dark);
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0;
@@ -118,7 +118,7 @@ h2 {
   min-height: 42px;
   border: 1px solid var(--line);
   border-radius: 999px;
-  background: #fff8e7;
+  background: #edf6f4;
   color: var(--muted);
   font-size: 0.86rem;
   font-weight: 700;
@@ -131,6 +131,21 @@ h2 {
 
 .stats-strip strong {
   font-size: 1.25rem;
+}
+
+.header-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.total-time {
+  gap: 7px;
+  padding: 0 12px;
+}
+
+.total-time strong {
+  font-size: 0.95rem;
 }
 
 .diary-form {
@@ -146,6 +161,8 @@ h2 {
 }
 
 input[type="date"],
+input[type="text"],
+input[type="number"],
 .search-box input,
 select,
 textarea {
@@ -162,6 +179,8 @@ textarea {
 }
 
 input[type="date"],
+input[type="text"],
+input[type="number"],
 .search-box input,
 select {
   min-height: 44px;
@@ -178,8 +197,8 @@ textarea {
 input:focus,
 select:focus,
 textarea:focus {
-  border-color: var(--pink);
-  box-shadow: 0 0 0 4px rgba(244, 127, 162, 0.16);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(67, 153, 143, 0.16);
   background: #fff;
 }
 
@@ -220,7 +239,7 @@ textarea:focus {
 
 .mood-option:hover {
   transform: translateY(-1px);
-  border-color: rgba(244, 127, 162, 0.6);
+  border-color: rgba(67, 153, 143, 0.6);
 }
 
 .mood-option input {
@@ -231,10 +250,10 @@ textarea:focus {
 }
 
 .mood-option:has(input:checked) {
-  border-color: var(--pink);
-  background: #fff1f6;
-  color: var(--pink-dark);
-  box-shadow: 0 10px 22px rgba(244, 127, 162, 0.18);
+  border-color: var(--accent);
+  background: #eaf5f3;
+  color: var(--accent-dark);
+  box-shadow: 0 10px 22px rgba(67, 153, 143, 0.18);
 }
 
 .mood-face {
@@ -272,14 +291,14 @@ textarea:focus {
 }
 
 .primary-button {
-  background: var(--pink);
+  background: var(--accent);
   color: white;
-  box-shadow: 0 12px 24px rgba(205, 71, 114, 0.22);
+  box-shadow: 0 12px 24px rgba(40, 109, 104, 0.22);
 }
 
 .primary-button:hover {
   transform: translateY(-1px);
-  box-shadow: 0 14px 28px rgba(205, 71, 114, 0.28);
+  box-shadow: 0 14px 28px rgba(40, 109, 104, 0.28);
 }
 
 .ghost-button,
@@ -291,7 +310,7 @@ textarea:focus {
 
 .ghost-button:hover,
 .entry-actions button:hover {
-  border-color: var(--pink);
+  border-color: var(--accent);
 }
 
 .summary-row {
@@ -306,7 +325,7 @@ textarea:focus {
   margin-bottom: 18px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: linear-gradient(135deg, #fff8e7, #fffefb);
+  background: linear-gradient(135deg, #edf6f4, #fffefb);
   padding: 16px;
 }
 
@@ -326,10 +345,10 @@ textarea:focus {
 .rhythm-chart {
   min-height: 180px;
   overflow: hidden;
-  border: 1px solid rgba(229, 221, 208, 0.86);
+  border: 1px solid rgba(215, 228, 226, 0.86);
   border-radius: 8px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(255, 248, 231, 0.42)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(237, 246, 244, 0.42)),
     #fffefb;
 }
 
@@ -340,7 +359,7 @@ textarea:focus {
 }
 
 .rhythm-grid line {
-  stroke: rgba(118, 113, 107, 0.22);
+  stroke: rgba(104, 122, 126, 0.22);
   stroke-dasharray: 4 5;
   stroke-width: 1;
 }
@@ -355,12 +374,12 @@ textarea:focus {
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-width: 5;
-  filter: drop-shadow(0 7px 10px rgba(205, 71, 114, 0.18));
+  filter: drop-shadow(0 7px 10px rgba(40, 109, 104, 0.18));
 }
 
 .rhythm-point circle {
   fill: #fffefb;
-  stroke: var(--pink);
+  stroke: var(--accent);
   stroke-width: 3;
 }
 
@@ -420,7 +439,7 @@ textarea:focus {
   gap: 6px;
   border: 1px dashed #dccfbd;
   border-radius: 8px;
-  background: rgba(255, 248, 231, 0.62);
+  background: rgba(237, 246, 244, 0.72);
   padding: 20px;
   color: var(--muted);
 }
@@ -465,8 +484,8 @@ textarea:focus {
   min-height: 32px;
   border-radius: 999px;
   padding: 0 10px;
-  background: #fff1f6;
-  color: var(--pink-dark);
+  background: #eaf5f3;
+  color: var(--accent-dark);
   font-size: 0.82rem;
   font-weight: 900;
 }

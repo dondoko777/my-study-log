@@ -2,34 +2,36 @@ const STORAGE_KEY = "tiny-diary.entries.v1";
 
 const moods = {
   happy: {
-    label: "うれしい",
-    face: "😊",
+    label: "よくできた",
+    face: "🌟",
     score: 5,
   },
   calm: {
-    label: "おだやか",
-    face: "😌",
+    label: "理解できた",
+    face: "📘",
     score: 4,
   },
   normal: {
     label: "ふつう",
-    face: "🙂",
+    face: "✏️",
     score: 3,
   },
   tired: {
-    label: "つかれた",
-    face: "😵‍💫",
+    label: "復習したい",
+    face: "🔁",
     score: 2,
   },
   sad: {
-    label: "しょんぼり",
-    face: "🥲",
+    label: "むずかしい",
+    face: "🧩",
     score: 1,
   },
 };
 
 const form = document.querySelector("#diary-form");
 const dateInput = document.querySelector("#entry-date");
+const subjectInput = document.querySelector("#entry-subject");
+const durationInput = document.querySelector("#entry-duration");
 const noteInput = document.querySelector("#entry-note");
 const clearButton = document.querySelector("#clear-button");
 const entryList = document.querySelector("#entry-list");
@@ -38,6 +40,7 @@ const saveState = document.querySelector("#save-state");
 const charCount = document.querySelector("#char-count");
 const editingLabel = document.querySelector("#editing-label");
 const entryCount = document.querySelector("#entry-count");
+const totalStudyTime = document.querySelector("#total-study-time");
 const summaryRow = document.querySelector("#summary-row");
 const searchInput = document.querySelector("#search-input");
 const moodFilter = document.querySelector("#mood-filter");
@@ -139,7 +142,7 @@ function getFilteredEntries() {
   return entries.filter((entry) => {
     const mood = moods[entry.mood];
     const matchesMood = selectedMood === "all" || entry.mood === selectedMood;
-    const searchableText = `${entry.date} ${entry.note} ${mood?.label ?? ""}`.toLowerCase();
+    const searchableText = `${entry.date} ${entry.subject ?? ""} ${entry.note} ${mood?.label ?? ""}`.toLowerCase();
     const matchesQuery = !query || searchableText.includes(query);
 
     return matchesMood && matchesQuery;
@@ -159,6 +162,10 @@ function renderEntries() {
             <span class="entry-date">${formatDate(entry.date)}</span>
             <span class="mood-badge">${mood.face} ${mood.label}</span>
           </div>
+          <div class="entry-topline">
+            <strong>${escapeHtml(entry.subject || "テーマ未設定")}</strong>
+            <span>${entry.duration ? `${entry.duration}分` : "学習時間未記録"}</span>
+          </div>
           <p class="entry-note">${escapeHtml(entry.note)}</p>
           <div class="entry-actions">
             <button type="button" data-action="edit" data-date="${entry.date}">編集</button>
@@ -171,13 +178,13 @@ function renderEntries() {
 
   if (entries.length > 0 && filteredEntries.length === 0) {
     emptyState.innerHTML = `
-      <strong>条件に合う記録がありません</strong>
-      <span>検索ワードや気分フィルターを変えてみてください。</span>
+      <strong>条件に合う学習記録がありません</strong>
+      <span>検索ワードや手応えの絞り込みを変えてみてください。</span>
     `;
   } else {
     emptyState.innerHTML = `
-      <strong>まだ記録がありません</strong>
-      <span>今日の気分と一言メモを保存すると、ここに表示されます。</span>
+      <strong>学習記録はまだありません</strong>
+      <span>学習テーマや時間、学んだことを記録してみましょう。</span>
     `;
   }
 
@@ -187,6 +194,10 @@ function renderEntries() {
 
 function renderSummary() {
   entryCount.textContent = entries.length;
+  const totalMinutes = entries.reduce((sum, entry) => sum + (Number(entry.duration) || 0), 0);
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  totalStudyTime.textContent = hours > 0 ? `${hours}時間${minutes}分` : `${minutes}分`;
 
   summaryRow.innerHTML = Object.entries(moods)
     .map(([moodKey, mood]) => {
@@ -200,7 +211,7 @@ function renderBiorhythm() {
   if (entries.length === 0) {
     rhythmChart.innerHTML = "";
     biorhythmMessage.textContent = "記録を保存すると表示されます";
-    biorhythmDetail.textContent = "最近7件の気分を波形グラフで表示します。";
+    biorhythmDetail.textContent = "最近7件の学習の手応えを表示します。";
     return;
   }
 
@@ -267,17 +278,17 @@ function createBiorhythmSvg(recentEntries) {
       class="rhythm-svg"
       viewBox="0 0 ${width} ${height}"
       role="img"
-      aria-label="最近${recentEntries.length}件の気分バイオリズム"
+      aria-label="最近${recentEntries.length}件の学習の手応え"
     >
       <defs>
         <linearGradient id="rhythm-line-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
           <stop offset="0%" stop-color="#6aa9ff" />
-          <stop offset="45%" stop-color="#79c7b3" />
+          <stop offset="45%" stop-color="#43998f" />
           <stop offset="75%" stop-color="#ffd166" />
-          <stop offset="100%" stop-color="#f47fa2" />
+          <stop offset="100%" stop-color="#286d68" />
         </linearGradient>
         <linearGradient id="rhythm-area-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stop-color="#f47fa2" stop-opacity="0.24" />
+          <stop offset="0%" stop-color="#43998f" stop-opacity="0.24" />
           <stop offset="100%" stop-color="#6aa9ff" stop-opacity="0.03" />
         </linearGradient>
       </defs>
@@ -338,34 +349,34 @@ function buildSinglePointWave(point, chartWidth) {
 
 function getBiorhythmMessage(trend, average, entryLength) {
   if (entryLength === 1) {
-    return "最初のリズムを記録しました";
+    return "最初の学習記録を保存しました";
   }
 
   if (trend >= 2) {
-    return "上向きのリズム";
+    return "手応えが上向いています";
   }
 
   if (trend >= 0.5) {
-    return "少し上向き";
+    return "少しずつ理解が深まっています";
   }
 
   if (trend <= -2) {
-    return "休むサイン多め";
+    return "復習に時間をかけてみましょう";
   }
 
   if (trend <= -0.5) {
-    return "少し下がり気味";
+    return "復習したい内容が増えています";
   }
 
   if (average >= 4) {
-    return "安定していい流れ";
+    return "よく理解できています";
   }
 
   if (average <= 2.2) {
-    return "ゆっくり整えたいリズム";
+    return "自分のペースで復習しましょう";
   }
 
-  return "安定したリズム";
+  return "着実に学習を続けています";
 }
 
 function render() {
@@ -379,8 +390,10 @@ function resetForm() {
   form.reset();
   dateInput.value = getTodayIso();
   clearSelectedMood();
+  subjectInput.value = "";
+  durationInput.value = "";
   noteInput.value = "";
-  editingLabel.textContent = "今日の記録を書いています";
+  editingLabel.textContent = "今日の学習記録を書いています";
   updateCharCount();
   updateSaveState("未保存");
   renderBiorhythm();
@@ -396,9 +409,11 @@ function updateSaveState(text) {
 
 function loadEntryIntoForm(entry) {
   dateInput.value = entry.date;
+  subjectInput.value = entry.subject ?? "";
+  durationInput.value = entry.duration ?? "";
   setSelectedMood(entry.mood);
   noteInput.value = entry.note;
-  editingLabel.textContent = `${formatDate(entry.date)}の記録を編集中`;
+  editingLabel.textContent = `${formatDate(entry.date)}の学習記録を編集中`;
   updateCharCount();
   updateSaveState("編集中");
   renderBiorhythm();
@@ -408,10 +423,20 @@ form.addEventListener("submit", (event) => {
   event.preventDefault();
 
   const date = dateInput.value;
+  const subject = subjectInput.value.trim();
+  const duration = Number(durationInput.value);
   const mood = getSelectedMood();
   const note = noteInput.value.trim();
 
-  if (!date || !mood || !note) {
+  if (
+    !date ||
+    !subject ||
+    !Number.isInteger(duration) ||
+    duration < 1 ||
+    duration > 1440 ||
+    !mood ||
+    !note
+  ) {
     updateSaveState("入力を確認");
     return;
   }
@@ -421,6 +446,8 @@ form.addEventListener("submit", (event) => {
   const nextEntry = {
     id: existingIndex >= 0 ? entries[existingIndex].id : createId(),
     date,
+    subject,
+    duration,
     mood,
     note,
     createdAt: existingIndex >= 0 ? entries[existingIndex].createdAt : now,
@@ -452,8 +479,10 @@ dateInput.addEventListener("change", () => {
   }
 
   clearSelectedMood();
+  subjectInput.value = "";
+  durationInput.value = "";
   noteInput.value = "";
-  editingLabel.textContent = `${formatDate(dateInput.value)}の記録を書いています`;
+  editingLabel.textContent = `${formatDate(dateInput.value)}の学習記録を書いています`;
   updateCharCount();
   updateSaveState("未保存");
   renderBiorhythm();
@@ -461,6 +490,14 @@ dateInput.addEventListener("change", () => {
 
 noteInput.addEventListener("input", () => {
   updateCharCount();
+  updateSaveState("編集中");
+});
+
+subjectInput.addEventListener("input", () => {
+  updateSaveState("編集中");
+});
+
+durationInput.addEventListener("input", () => {
   updateSaveState("編集中");
 });
 
